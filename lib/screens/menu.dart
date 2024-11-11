@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:toko_emas86_mobile/widgets/left_drawer.dart';
+import 'package:toko_emas86_mobile/widgets/mood_card.dart';
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
   final String npm = '2306275651'; // NPM
@@ -27,7 +29,7 @@ final List<ItemHomepage> items = [
     return Scaffold(
       // AppBar adalah bagian atas halaman yang menampilkan judul.
       appBar: AppBar(
-        // Judul aplikasi "Mental Health Tracker" dengan teks putih dan tebal.
+       
         title: const Text(
           'Toko Emas 86',
           style: TextStyle(
@@ -37,7 +39,11 @@ final List<ItemHomepage> items = [
         ),
         // Warna latar belakang AppBar diambil dari skema warna tema aplikasi.
         backgroundColor: Theme.of(context).colorScheme.primary,
+        // Mengganti warna icon drawer menjadi putih
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
+      // Masukkan drawer sebagai parameter nilai drawer dari widget Scaffold
+      drawer: const LeftDrawer(),
       // Body halaman dengan padding di sekelilingnya.
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -134,57 +140,4 @@ class InfoCard extends StatelessWidget {
     );
   }
 }
- class ItemHomepage {
-     final String name;
-     final IconData icon;
-     final Color color;
-
-     ItemHomepage(this.name, this.icon, this.color);
- }
-
-
-class ItemCard extends StatelessWidget {
-  // Menampilkan kartu dengan ikon dan nama.
-
-  final ItemHomepage item;
-
-  const ItemCard(this.item, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: item.color, // Use the item's color here
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: () {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!")),
-            );
-        },
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item.icon,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-                const Padding(padding: EdgeInsets.all(3)),
-                Text(
-                  item.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+ 
