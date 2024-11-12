@@ -172,7 +172,7 @@ class _GoldEntryFormPageState extends State<GoldEntryFormPage> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          // Show dialog on successful validation
+                          // nampilkan dialog klo data berhasil disimpan
                           showDialog(
                             context: context,
                             builder: (context) {
@@ -195,7 +195,7 @@ class _GoldEntryFormPageState extends State<GoldEntryFormPage> {
                                     child: const Text('OK'),
                                     onPressed: () {
                                       Navigator.pop(context);
-                                      // Reset form and clear variables
+                                      // Reset form and clear fields 
                                       setState(() {
                                         _formKey.currentState!.reset();
                                         _name = '';

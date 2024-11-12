@@ -20,7 +20,7 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: item.color, // Use the item's color here
+      color: item.color, // warna bg item
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: () {
