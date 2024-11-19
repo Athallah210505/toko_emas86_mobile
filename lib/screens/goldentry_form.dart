@@ -1,4 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:toko_emas86_mobile/screens/menu.dart';
 import 'package:toko_emas86_mobile/widgets/left_drawer.dart';
 
 class GoldEntryFormPage extends StatefulWidget {
@@ -10,14 +14,15 @@ class GoldEntryFormPage extends StatefulWidget {
 
 class _GoldEntryFormPageState extends State<GoldEntryFormPage> {
   final _formKey = GlobalKey<FormState>();
-  String _name = '';
+  String _goldName = '';
   int _price = 0;
-  int _weight = 0;
   String _description = '';
-  int _amount = 0;
+  int _quantity = 0;
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Center(
@@ -50,7 +55,7 @@ class _GoldEntryFormPageState extends State<GoldEntryFormPage> {
                     ),
                     onChanged: (String? value) {
                       setState(() {
-                        _name = value!;
+                        _goldName = value!;
                       });
                     },
                     validator: (String? value) {
@@ -89,31 +94,7 @@ class _GoldEntryFormPageState extends State<GoldEntryFormPage> {
                 ),
 
                 // Input field for Weight
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      hintText: "Weight",
-                      labelText: "Weight",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                    keyboardType: TextInputType.number,
-                    onChanged: (String? value) {
-                      setState(() {
-                        _weight = int.tryParse(value ?? '0') ?? 0;
-                      });
-                    },
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty || int.tryParse(value) == null) {
-                        return "Weight harus berupa angka!";
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-
+                
                 // Input field for Description
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -139,13 +120,13 @@ class _GoldEntryFormPageState extends State<GoldEntryFormPage> {
                   ),
                 ),
 
-                // Input field for Amount
+                // Input field for Quantity
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextFormField(
                     decoration: InputDecoration(
-                      hintText: "Amount",
-                      labelText: "Amount",
+                      hintText: "Quantity",
+                      labelText: "Quantity",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),
@@ -153,12 +134,12 @@ class _GoldEntryFormPageState extends State<GoldEntryFormPage> {
                     keyboardType: TextInputType.number,
                     onChanged: (String? value) {
                       setState(() {
-                        _amount = int.tryParse(value ?? '0') ?? 0;
+                        _quantity = int.tryParse(value ?? '0') ?? 0;
                       });
                     },
                     validator: (String? value) {
                       if (value == null || value.isEmpty || int.tryParse(value) == null) {
-                        return "Amount harus berupa angka!";
+                        return "Quantity harus berupa angka!";
                       }
                       return null;
                     },
@@ -170,49 +151,53 @@ class _GoldEntryFormPageState extends State<GoldEntryFormPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          // nampilkan dialog klo data berhasil disimpan
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text('Produk berhasil disimpan'),
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Name: $_name'),
-                                      Text('Price: $_price'),
-                                      Text('Description: $_description'),
-                                      Text('Weight: $_weight'),
-                                      Text('Amount: $_amount'),
-                                    ],
+                          try {
+                            final response = await request.postJson(
+                              "http://127.0.0.1:8000/create-flutter/",
+                              jsonEncode(<String, String>{
+                                'gold_name': _goldName,
+                                'price': _price.toString(),
+                                'quantity': _quantity.toString(),
+                                'description': _description
+                              }),
+                            );
+
+                            if (context.mounted) {
+                              if (response['status'] == 'success') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Data berhasil disimpan!"),
                                   ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    child: const Text('OK'),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      // Reset form and clear fields 
-                                      setState(() {
-                                        _formKey.currentState!.reset();
-                                        _name = '';
-                                        _price = 0;
-                                        _weight = 0;
-                                        _description = '';
-                                        _amount = 0;
-                                      });
-                                    },
+                                );
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MyHomePage()),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        "Terdapat kesalahan, silakan coba lagi."),
                                   ),
-                                ],
-                              );
-                            },
-                          );
+                                );
+                              }
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Error: ${e.toString()}"),
+                              ),
+                            );
+                          }
                         }
                       },
-                      child: const Text("Save", style: TextStyle(color: Colors.black)),
+                      child: const Text(
+                        "Save",
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                   ),
                 ),

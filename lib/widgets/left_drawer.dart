@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:toko_emas86_mobile/screens/list_productentry.dart';
 import 'package:toko_emas86_mobile/screens/menu.dart';
 import 'package:toko_emas86_mobile/screens/goldentry_form.dart';
 class LeftDrawer extends StatelessWidget {
@@ -50,12 +51,24 @@ class LeftDrawer extends StatelessWidget {
               // Bagian redirection ke 
               onTap: () {
                 Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const GoldEntryFormPage(),
+                  context,
+                MaterialPageRoute(builder: (context) => const GoldEntryFormPage(),
                 ));
               },
             ),
+
+            ListTile(
+    leading: const Icon(Icons.add_reaction_rounded),
+
+    title: const Text('Daftar Product'),
+    onTap: () {
+        // Route menu ke halaman mood
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProductEntryPage()),
+        );
+    },
+),
         ],
       ),
     );
